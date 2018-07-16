@@ -1,0 +1,248 @@
+syntax = "proto2";
+
+enum UrlType {
+    URL_LIST    = 1;  // page with URL_LIST won't storage to disk
+    URL_CONTENT = 2;
+}
+
+enum StorageType {
+    STORAGE_HDFS = 1;
+    STORAGE_MQ   = 2;
+}
+
+// deprecated
+enum RuleType {
+    RULE_XPATH = 1;
+    RULE_RE    = 2;
+}
+
+enum FeatureType {
+    FEATURE_ONCE   = 1;
+    FEATURE_PERIOD = 2;
+}
+
+enum CmdType {
+    CMD_FINISH  = 1;
+    CMD_DUMP_BF = 2;
+}
+
+enum ReshapeType {
+    RESHAPE_ADD = 1;
+    RESHAPE_DEL = 2;
+}
+
+message TaskId {
+    optional string taskid   = 1;
+    optional string objectid = 2;
+}
+
+message CrawlUrl {
+    optional string url        = 1;
+    repeated UrlType url_types = 2;  // a url may has mutiple types
+    optional string level      = 3;  // we assign a level to start url
+    optional string payload    = 4;  // some info should be pass and store
+    optional string parent_url = 5;
+    optional int32 index       = 6;
+}
+
+message Feature {
+    optional bool dup_ignore          = 1;
+    optional bool testing             = 2;
+    optional FeatureType feature_type = 3;
+    optional int32 interval           = 4;
+}
+
+message Reshape {
+    optional ReshapeType reshape_type = 1;
+    optional string pattern           = 2;
+    optional string content           = 3;
+}
+
+message LinkRule {
+    optional string in_level   = 1;  // apply this rule to url with in_level
+    repeated string rules      = 2;  // xpath:rule or re:rule
+    repeated UrlType url_types = 3;  // the extracted urls' types
+    optional string out_level = 4;  // extracted url are assigned with out_level
+    optional Reshape reshape  = 5;
+    repeated string allows    = 6;
+    repeated string denys     = 7;
+}
+
+message Storage {
+    optional StorageType store_type = 1;
+    optional string dest            = 2;
+    optional string attachment      = 3;  // user:pass hadoop.job.ugi
+}
+
+message Runtime {
+    optional float download_delay  = 1;
+    optional int32 concurrent_reqs = 2;
+    repeated string allow_fetchers = 3;
+    repeated string deny_fetchers  = 4;
+}
+
+message BasicTask {
+    optional TaskId taskid       = 1;
+    optional string name         = 2;
+    optional string user         = 3;
+    repeated CrawlUrl crawl_urls = 4;
+    optional Feature feature     = 5;
+    repeated LinkRule rules      = 6;
+    optional Storage storage     = 7;
+    optional Runtime runtime     = 8;
+}
+
+message CrawlingTask {
+    optional TaskId taskid       = 1;
+    optional string fetcher      = 2;
+    repeated CrawlUrl crawl_urls = 3;
+    repeated LinkRule rules      = 4;
+    optional Storage storage     = 5;
+    optional Feature feature     = 6;
+}
+
+message CrawledTask {
+    optional TaskId taskid          = 1;
+    optional string fetcher         = 2;
+    optional CrawlUrl crawled_url   = 3;
+    optional int32 status           = 4;
+    optional bool content_empty     = 5;
+    repeated CrawlUrl crawling_urls = 6;
+}
+
+message StoredTask {
+    optional TaskId taskid   = 1;
+    repeated string urls     = 2;
+    optional Storage storage = 3;
+}
+
+message CrawlStats {
+    optional TaskId taskid       = 1;
+    optional int32 total_url     = 2;
+    optional int32 success       = 3;
+    optional int32 code400       = 4;
+    optional int32 code403       = 5;
+    optional int32 code404       = 6;
+    optional int32 code410       = 7;
+    optional int32 code500       = 8;
+    optional int32 code504       = 9;
+    optional int32 codexxx       = 10;
+    optional int32 content_empty = 11;
+    optional int32 extracted_url = 12;
+}
+
+message TaskStats {
+    optional string taskid      = 1;
+    optional string name        = 2;
+    optional string user        = 3;
+    optional string start_time  = 4;
+    optional string last_update = 5;
+    optional CrawlStats stats   = 6;
+    repeated string result_dirs = 7;
+    optional bool fininsed      = 8;
+}
+
+message RuntimeStats {
+    optional TaskId taskid        = 1;
+    optional int32 total_urls     = 2;
+    optional int32 crawling_urls  = 3;
+    optional int32 finished_urls  = 4;
+    optional string last_crawling = 5;
+    repeated CrawlUrl waitings    = 6;
+    repeated CrawlUrl crawlings   = 7;
+    repeated CrawlUrl crawleds    = 8;
+}
+
+message TaskFullSummary {
+    optional TaskId taskid       = 1;
+    optional BasicTask summary   = 2;
+    optional int32 total_urls    = 3;
+    optional int32 finished_urls = 4;
+    repeated RuntimeStats tasks  = 5;
+}
+
+message TaskResponse {
+    optional string taskid = 1;
+    optional int32 code    = 2;
+    optional string msg    = 3;
+}
+
+message Empty {
+}
+
+message TaskControl {
+    optional TaskId taskid    = 1;
+    optional CmdType cmd_type = 2;
+}
+
+service TaskInterface {
+    rpc add_task(BasicTask) returns (TaskStats) {
+    }
+    rpc query_task(TaskId) returns (TaskStats) {
+    }
+    rpc query_runtime(TaskId) returns (TaskFullSummary) {
+    }
+    // rpc dump_boomfilter(Empty)  returns (TaskResponse) {}
+    rpc control(TaskControl) returns (TaskResponse) {
+    }
+}
+
+message Fetcher {
+    optional string name = 1;
+    optional string addr = 2;
+}
+
+service Schedule {
+    rpc add_task(BasicTask) returns (TaskResponse) {
+    }
+    rpc add_fetcher(Fetcher) returns (TaskResponse) {
+    }
+    rpc add_crawledtask(CrawledTask) returns (TaskResponse) {
+    }
+    rpc add_storedtask(StoredTask) returns (TaskResponse) {
+    }
+    rpc query_task(TaskId) returns (TaskFullSummary) {
+    }
+    // rpc dump_bloomfilter(Empty)         returns (TaskResponse) {}
+    rpc control(TaskControl) returns (TaskResponse) {
+    }
+}
+
+message PingRequest {
+    optional string name = 1;
+}
+
+message PingResponse {
+    optional string name  = 1;
+    optional bool healthy = 2;
+    optional string msg   = 3;
+}
+
+service Fetch {
+    rpc ping(PingRequest) returns (PingResponse) {
+    }
+    rpc add_crawlingtask(CrawlingTask) returns (TaskResponse) {
+    }
+}
+
+message CrawlDoc {
+    optional TaskId taskid       = 1;
+    optional string url          = 2;
+    optional int32 status        = 3;
+    optional string content_type = 4;
+    optional string content      = 5;
+    optional string payload      = 6;
+    optional Storage storage     = 7;
+}
+
+message CrawlDocs {
+    optional TaskId taskid = 1;
+    repeated CrawlDoc docs = 2;
+}
+
+service Handle {
+    rpc ping(PingRequest) returns (PingResponse) {
+    }
+    rpc add_crawldoc(CrawlDoc) returns (TaskResponse) {
+    }
+}

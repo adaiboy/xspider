@@ -1,0 +1,30 @@
+{
+    "name": "ChinaDaily",
+    "user": "xboy",
+    "crawl_urls": [
+        {
+            "url": "http://language.chinadaily.com.cn/news_bilingual.html",
+            "url_types": [1]
+        }
+    ],
+    "feature": {
+        "dup_ignore": 0,
+        "testing": 0,
+        "feature_type": 1
+    },
+    "runtime": {
+        "concurrent_reqs": 10,
+        "download_delay": 0.4
+    },
+    "rules": [
+        {
+            "rules": ["xpath://*[@id=\"div_currpage\"]"],
+            "url_types": [1,2]
+        },
+        {
+            "rules": ["xpath://*[@class=\"busBox1\"]"],
+            "url_types": [2]
+        }
+    ]
+}
+

@@ -1,0 +1,12 @@
+{
+    "taskid": {
+        "taskid" : "Task-20170810190310-0006"
+    },
+    "name": "Unittest-2",
+    "user": "xboy",
+    "runtime": {
+        "concurrent_reqs": 10,
+        "download_delay": 0.2
+    }
+}
+

@@ -1,0 +1,35 @@
+{
+    "name": "ChinaDaily",
+    "user": "xboy",
+    "crawl_urls": [
+        {
+            "url": "http://language.chinadaily.com.cn/trans_collect.html",
+            "url_types": [1]
+        },
+        {
+            "url": "http://language.chinadaily.com.cn/audio_cd.html",
+            "url_types": [1]
+        },
+        {
+            "url": "http://language.chinadaily.com.cn/news_bilingual.html",
+            "url_types": [1]
+        }
+    ],
+    "feature": {
+        "dup_ignore": 0,
+        "testing": 0,
+        "feature_type": 2,
+        "interval": 86400
+    },
+    "runtime": {
+        "concurrent_reqs": 8,
+        "download_delay": 0.4,
+    },
+    "rules": [
+        {
+            "rules": ["xpath://*[@class=\"busBox1\"]"],
+            "url_types": [2]
+        }
+    ]
+}
+

@@ -1,0 +1,41 @@
+{
+    "name": "Unittest-3",
+    "user": "xboy",
+    "crawl_urls": [
+        {
+            "url": "http://language.chinadaily.com.cn/news_bilingual.html",
+            "url_types": [1]
+        }
+    ],
+    "feature": {
+        "dup_ignore": 0,
+        "testing": 1,
+        "feature_type": 1
+    },
+    "runtime": {
+        "concurrent_reqs": 10,
+        "download_delay": 0.4,
+        "allow_fetchers" : ["fetcher"]
+    },
+    "rules": [
+        {
+            "rules": ["xpath://*[@id=\"div_currpage\"]"],
+            "url_types": [1,2],
+            "reshape": {
+                "reshape_type" : 1,
+                "content" : "added"
+            },
+            "allow": ["language.chinadaily.com.cn"]
+        },
+        {
+            "rules": ["xpath://*[@class=\"busBox1\"]"],
+            "url_types": [2],
+            "reshape": {
+                "reshape_type": 2,
+                "pattern": "content_(\\d+)"
+            },
+            "allow": ["language.chinadaily.com.cn"]
+        }
+    ]
+}
+
