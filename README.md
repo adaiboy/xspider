@@ -22,3 +22,8 @@
 
 ## 架构设计
 ![xspider整体设计](https://github.com/adaiboy/xspider/blob/master/spider-architecture.png "xspider架构")
+
+## 其他说明
+* 代码是在一个月内写完的，期间还包含研究scrapy等，所以代码严重缺乏注释，pylint会超多提示，我都选择忽略了..
+* 代码后来被其他同学接手了，有配套一个webui，用的就是架构说明里的技术栈，因为我之前做了以下相关技术的调研和demo
+* 被接手后，在数据库批量操作上，有优化，但没有包含在上述代码中
