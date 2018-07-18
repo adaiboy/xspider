@@ -21,3 +21,4 @@
 > 各个服务目录下均有实际应用的启动脚本
 
 ## 架构设计
+![xspider整体设计](https://github.com/adaiboy/xspider/blob/master/spider-architecture.png "xspider架构")
