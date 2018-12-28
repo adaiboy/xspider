@@ -230,7 +230,7 @@ message CrawlDoc {
     optional string url          = 2;
     optional int32 status        = 3;
     optional string content_type = 4;
-    optional string content      = 5;
+    optional bytes content       = 5;
     optional string payload      = 6;
     optional Storage storage     = 7;
 }
