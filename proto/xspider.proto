@@ -40,7 +40,7 @@ message CrawlUrl {
     optional string url        = 1;
     repeated UrlType url_types = 2;  // a url may has mutiple types
     optional string level      = 3;  // we assign a level to start url
-    optional string payload    = 4;  // some info should be pass and store
+    optional bytes payload     = 4;  // some info should be pass and store
     optional string parent_url = 5;
     optional int32 index       = 6;
 }
