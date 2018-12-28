@@ -32,8 +32,8 @@ enum ReshapeType {
 }
 
 message TaskId {
-    optional string taskid   = 1;
-    optional string objectid = 2;
+    optional string taskid  = 1;
+    optional bytes objectid = 2;
 }
 
 message CrawlUrl {
